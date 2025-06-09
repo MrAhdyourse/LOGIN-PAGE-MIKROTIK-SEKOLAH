@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Login Hotspot SMK NU Indramayu</title>
+  <link href="https://fonts.googleapis.com/css?family=Montserrat:700,600,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #3588f8;
+      --secondary: #53c7f7;
+      --gradient: linear-gradient(120deg, #3588f8 0%, #53c7f7 100%);
+      --gradient-dark: linear-gradient(120deg, #232325 0%, #1a1a1a 100%);
+      --success: #25d366;
+      --danger: #fd4949;
+      --dark-bg: #18181a;
+      --light-bg: #f6f8fa;
+      --card-light: #fff;
+      --card-dark: #232325;
+      --input-light: #f7fafd;
+      --input-dark: #2c2c2f;
+      --label-dark: #ffe082;
+      --label-light: #3588f8;
+      --footer-light: #3b3b3b;
+      --footer-dark: #ffe082;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      font-family: 'Montserrat', Arial, sans-serif;
+      background: var(--light-bg);
+      color: #232325;
+      transition: background 0.35s, color 0.35s;
+      position: relative;
+      overflow-x: hidden;
+    }
+    body.dark-mode {
+      background: var(--dark-bg);
+      color: #fafafa;
+    }
+    /* Background geometric/gradient */
+    .bg-deco {
+      position: fixed;
+      width: 100vw;
+      height: 100vh;
+      left: 0;
+      top: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+    .bg-deco .circle1,
+    .bg-deco .circle2 {
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0.35;
+      filter: blur(2px);
+    }
+    .bg-deco .circle1 {
+      width: 420px; height: 420px; left: -120px; top: -110px;
+      background: var(--gradient);
+      z-index: 1;
+    }
+    .bg-deco .circle2 {
+      width: 320px; height: 320px; right: -80px; bottom: -100px;
+      background: var(--secondary);
+      z-index: 1;
+    }
+    body.dark-mode .bg-deco .circle1 {
+      background: var(--gradient-dark);
+      opacity: 0.44;
+    }
+    body.dark-mode .bg-deco .circle2 {
+      background: #ffb300;
+      opacity: 0.18;
+    }
+    /* Topbar */
+    .topbar {
+      width: 100%;
+      max-width: 430px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 34px 0 16px 0;
+      position: relative;
+      z-index: 2;
+    }
+    .status-indicator {
+      font-size: 0.97rem;
+      font-weight: 600;
+      padding: 7px 19px;
+      border-radius: 20px;
+      background: #e0e0e0;
+      color: #888;
+      letter-spacing: 1px;
+      box-shadow: 0 1px 5px rgba(0,0,0,0.06);
+      transition: background 0.3s, color 0.3s;
+      user-select: none;
+    }
+    .status-indicator.online { background: var(--success); color: #fff; }
+    .status-indicator.offline { background: var(--danger); color: #fff; }
+    .theme-toggle {
+      background: none;
+      border: none;
+      font-size: 1.7rem;
+      color: #3a3a3a;
+      cursor: pointer;
+      outline: none;
+      transition: color 0.3s;
+      z-index: 3;
+    }
+    body.dark-mode .theme-toggle { color: #ffb300; }
+    /* Main content/card */
+    .main-content {
+      width: 100%;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding-bottom: 70px;
+      z-index: 2;
+      position: relative;
+    }
+    .login-card {
+      width: 100%;
+      max-width: 410px;
+      background: var(--card-light);
+      padding: 0 0 38px 0;
+      margin: 0 auto;
+      border-radius: 34px 34px 22px 22px;
+      box-shadow: 0 15px 42px rgba(40,80,160,0.12), 0 2px 6px rgba(40,80,160,0.07);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: background 0.4s, color 0.4s;
+      position: relative;
+      z-index: 3;
+      animation: fadein 0.75s cubic-bezier(.29,.73,.42,1.01);
+    }
+    @keyframes fadein {
+      from { opacity: 0; transform: translateY(60px);}
+      to   { opacity: 1; transform: translateY(0);}
+    }
+    body.dark-mode .login-card {
+      background: var(--card-dark);
+      color: #fafafa;
+      box-shadow: 0 10px 38px rgba(40,80,160,0.20);
+    }
+    .logo-area {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      margin-top: -54px;
+    }
+    .logo {
+      width: 90px;
+      height: 90px;
+      margin-top: -45px;
+      background: #fff;
+      border-radius: 50%;
+      object-fit: contain;
+      box-shadow: 0 2px 18px rgba(53,136,248,0.10);
+      margin-bottom: 9px;
+    }
+    .school-name {
+      font-size: 1.2rem;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      margin-bottom: 11px;
+      color: var(--label-light);
+      text-shadow: 0 2px 10px rgba(53,136,248,0.04);
+    }
+    body.dark-mode .school-name { color: var(--label-dark); text-shadow: 0 2px 10px rgba(255,184,28,0.03);}
+    .login-title {
+      font-size: 1.27rem;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 3px;
+      margin-top: 8px;
+      letter-spacing: 1px;
+    }
+    /* Tab switch */
+    .login-switch {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0;
+      width: 100%;
+      margin: 20px 0 0 0;
+      border-radius: 14px 14px 0 0;
+      overflow: hidden;
+      background: #e6f0fd;
+      box-shadow: 0 1px 6px rgba(53,136,248,0.12);
+    }
+    .login-tab {
+      flex: 1;
+      padding: 13px 0;
+      border: none;
+      background: transparent;
+      color: #3588f8;
+      font-weight: 700;
+      font-size: 1.08rem;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      outline: none;
+      transition: background 0.18s, color 0.18s;
+      border-bottom: 2.5px solid transparent;
+    }
+    .login-tab.active {
+      background: linear-gradient(90deg,#3588f8 0%,#53c7f7 100%);
+      color: #fff;
+      box-shadow: 0 1px 10px rgba(53,136,248,0.13);
+      border-bottom: 2.5px solid #fff;
+      z-index: 1;
+    }
+    body.dark-mode .login-switch { background: #232325; }
+    body.dark-mode .login-tab { color: #ffe082; }
+    body.dark-mode .login-tab.active {
+      background: linear-gradient(90deg,#f85c2e 0%,#ffd600 100%);
+      color: #232325;
+      border-bottom: 2.5px solid #ffd600;
+    }
+    /* Forms wrapper & animasi tab */
+    .login-forms {
+      width: 100%;
+      margin-top: 0;
+      padding: 0 32px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      min-height: 195px;
+    }
+    .login-form {
+      display: none;
+      flex-direction: column;
+      gap: 19px;
+      width: 100%;
+      margin-top: 26px;
+      animation: tabfade .44s;
+      position: absolute;
+      left: 0; right: 0; top: 0;
+    }
+    .login-form.active { display: flex; position: relative;}
+    @keyframes tabfade {
+      from { opacity: 0; transform: translateY(30px);}
+      to   { opacity: 1; transform: translateY(0);}
+    }
+    /* Floating label input */
+    .float-label-group {
+      position: relative;
+      width: 100%;
+      margin-bottom: 0;
+    }
+    .float-label-group input {
+      width: 100%;
+      padding: 15px 14px 15px 16px;
+      border-radius: 11px;
+      border: 1.5px solid #c2c2c2;
+      font-size: 1.03rem;
+      background: var(--input-light);
+      color: #232325;
+      outline: none;
+      transition: border 0.3s, background 0.3s;
+      font-family: inherit;
+    }
+    .float-label-group label {
+      position: absolute;
+      left: 18px;
+      top: 16px;
+      color: #8a8a8a;
+      font-size: 1.02rem;
+      font-weight: 500;
+      background: transparent;
+      pointer-events: none;
+      transition: all 0.22s;
+      z-index: 2;
+    }
+    .float-label-group input:focus + label,
+    .float-label-group input:not(:placeholder-shown) + label {
+      top: -11px;
+      left: 11px;
+      font-size: 0.89rem;
+      color: var(--primary);
+      background: var(--card-light);
+      padding: 0 7px;
+      border-radius: 7px;
+    }
+    body.dark-mode .float-label-group input {
+      background: var(--input-dark);
+      color: #fff;
+      border: 1.5px solid #41415a;
+    }
+    body.dark-mode .float-label-group label {
+      color: #b0b0b0;
+      background: transparent;
+    }
+    body.dark-mode .float-label-group input:focus + label,
+    body.dark-mode .float-label-group input:not(:placeholder-shown) + label {
+      color: #ffb300;
+      background: var(--card-dark);
+    }
+    /* Show/hide password */
+    .toggle-password {
+      position: absolute;
+      right: 13px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      font-size: 1.18rem;
+      color: #577cf8;
+      cursor: pointer;
+      outline: none;
+      z-index: 2;
+      padding: 4px;
+      transition: color 0.3s;
+    }
+    body.dark-mode .toggle-password { color: #ffb300; }
+    /* Button */
+    .btn-login {
+      width: 100%;
+      padding: 15px 0;
+      background: var(--gradient);
+      color: #fff;
+      border: none;
+      border-radius: 13px;
+      font-size: 1.09rem;
+      font-weight: 700;
+      margin-top: 9px;
+      cursor: pointer;
+      transition: background 0.22s, box-shadow 0.22s;
+      box-shadow: 0 3px 18px rgba(53,136,248,0.14);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-login::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 0;
+      height: 0;
+      background: rgba(255,255,255,0.18);
+      border-radius: 100%;
+      transform: translate(-50%,-50%);
+      transition: width 0.4s cubic-bezier(.44,.84,.55,1.1), height 0.4s cubic-bezier(.44,.84,.55,1.1);
+      z-index: 1;
+      pointer-events: none;
+    }
+    .btn-login:active::after {
+      width: 180%;
+      height: 300%;
+      transition: width 0.15s, height 0.13s;
+    }
+    .btn-login:focus { outline: 2px solid #3588f8; }
+    body.dark-mode .btn-login {
+      background: linear-gradient(90deg,#f85c2e 0%,#ffd600 100%);
+      color: #232325;
+      box-shadow: 0 3px 18px rgba(248,92,46,0.09);
+    }
+    /* Hints & methods */
+    .login-hint {
+      width: 100%;
+      text-align: center;
+      margin: 18px 0 8px 0;
+      font-size: 0.99rem;
+      color: #7b7b7b;
+    }
+    body.dark-mode .login-hint { color: #b0b0b0; }
+    .login-methods {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      gap: 18px;
+      margin-top: 9px;
+    }
+    .icon-method {
+      font-size: 1.3rem;
+      color: #3588f8;
+      background: #e8f1fe;
+      border-radius: 10px;
+      padding: 7px 10px;
+      transition: background 0.3s, color 0.3s, transform 0.2s;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(53,136,248,0.08);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .icon-method:hover { background: #d5e3fb; transform: scale(1.12);}
+    body.dark-mode .icon-method {
+      color: #ffb300;
+      background: #232325;
+    }
+    body.dark-mode .icon-method:hover { background: #343438; }
+    /* Footer copyright */
+    footer {
+      width: 100vw;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      z-index: 20;
+      background: none;
+      text-align: center;
+      pointer-events: none;
+    }
+    .footer-text {
+      font-size: 1.05rem;
+      font-weight: 600;
+      padding: 19px 0 10px 0;
+      color: var(--footer-light);
+      text-align: center;
+      letter-spacing: 1px;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    }
+    body.dark-mode .footer-text { color: var(--footer-dark); text-shadow: 0 2px 8px rgba(255,184,28,0.08);}
+    /* RESPONSIVE */
+    @media (max-width: 600px) {
+      .main-content { padding-top: 10vw; }
+      .login-card { max-width: 98vw; }
+      .logo { width: 66px; height: 66px; margin-top: -31px; }
+      .login-title { font-size: 1.07rem; }
+      .login-forms { padding: 0 6vw; }
+      .footer-text { font-size: 0.97rem; }
+      .login-switch { font-size: 0.96rem; }
+    }
+    @media (max-width: 400px) {
+      .login-forms { padding: 0 2vw; }
+      .login-card { border-radius: 18px 18px 11px 11px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-deco">
+    <div class="circle1"></div>
+    <div class="circle2"></div>
+  </div>
+  <div class="topbar">
+    <span id="netStatus" class="status-indicator offline">OFFLINE</span>
+    <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark mode">
+      <i class="fas fa-moon"></i>
+    </button>
+  </div>
+  <div class="main-content">
+    <div class="login-card">
+      <div class="logo-area">
+        <img src="img/logo.png" alt="Logo SMK NU Indramayu" class="logo">
+        <div class="school-name">SMK NU INDRAMAYU</div>
+      </div>
+      <div class="login-title">Selamat Datang !</div>
+      <!-- Tab Switch Login Method -->
+      <div class="login-switch">
+        <button class="login-tab active" id="tab-siswa" type="button">Siswa</button>
+        <button class="login-tab" id="tab-guru" type="button">Guru</button>
+      </div>
+      <!-- Login forms wrapper -->
+      <div class="login-forms">
+        <!-- Form Siswa (Username + Password) -->
+        <form id="loginFormSiswa" class="login-form active" method="post" action="/login">
+          <div class="float-label-group">
+            <input type="text" name="username" id="usernameInput" required autocomplete="username" placeholder=" " >
+            <label for="usernameInput">Masukkan Username Anda</label>
+          </div>
+          <div class="float-label-group">
+            <input type="password" name="password" id="passwordInputSiswa" required autocomplete="current-password" placeholder=" ">
+            <label for="passwordInputSiswa">Kata Sandi</label>
+            <button type="button" class="toggle-password" tabindex="-1" aria-label="Tampilkan Sandi"><i class="fas fa-eye"></i></button>
+          </div>
+          <input type="hidden" name="dst" value="">
+          <input type="hidden" name="popup" value="true">
+          <button type="submit" class="btn-login">Login</button>
+        </form>
+        <!-- Form Guru (Password Only) -->
+        <form id="loginFormGuru" class="login-form" method="post" action="/login-guru">
+          <div class="float-label-group">
+            <input type="password" name="guru_password" id="passwordInputGuru" required autocomplete="current-password" placeholder=" ">
+            <label for="passwordInputGuru">Password Guru</label>
+            <button type="button" class="toggle-password" tabindex="-1" aria-label="Tampilkan Sandi"><i class="fas fa-eye"></i></button>
+          </div>
+          <input type="hidden" name="dst" value="">
+          <input type="hidden" name="popup" value="true">
+          <button type="submit" class="btn-login">Login Guru</button>
+        </form>
+      </div>
+      <div class="login-hint">
+        Jika mengalami kendala, silakan hubungi tim IT.<br>Pilih bagaimana cara anda untuk login:
+      </div>
+      <div class="login-methods">
+        <span title="Login Voucher" class="icon-method"><i class="fas fa-ticket-alt"></i></span>
+        <span title="Login Member" class="icon-method"><i class="fas fa-user"></i></span>
+        <span title="Login QR" class="icon-method"><i class="fas fa-qrcode"></i></span>
+      </div>
+    </div>
+  </div>
+  <footer>
+    <div class="footer-text">Copyright&copy;SMKNUIDM Designed by : Ahdyourse</div>
+  </footer>
+  <script>
+    // Theme toggle
+    const themeToggle = document.getElementById('themeToggle');
+    const isDark = () => document.body.classList.contains('dark-mode');
+    function setTheme(dark) {
+      if (dark) {
+        document.body.classList.add('dark-mode');
+        themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+      } else {
+        document.body.classList.remove('dark-mode');
+        themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+      }
+      try { localStorage.setItem('theme-dark', dark ? '1' : '0'); } catch(e){}
+    }
+    themeToggle.addEventListener('click', () => setTheme(!isDark()));
+    try {
+      const saved = localStorage.getItem('theme-dark');
+      if (saved === '1') setTheme(true);
+      else setTheme(false);
+    } catch(e){}
+
+    // Tab switch login method (Siswa/Guru)
+    const tabSiswa = document.getElementById('tab-siswa');
+    const tabGuru = document.getElementById('tab-guru');
+    const formSiswa = document.getElementById('loginFormSiswa');
+    const formGuru = document.getElementById('loginFormGuru');
+    tabSiswa.addEventListener('click', () => {
+      tabSiswa.classList.add('active');
+      tabGuru.classList.remove('active');
+      formSiswa.classList.add('active');
+      formGuru.classList.remove('active');
+    });
+    tabGuru.addEventListener('click', () => {
+      tabGuru.classList.add('active');
+      tabSiswa.classList.remove('active');
+      formGuru.classList.add('active');
+      formSiswa.classList.remove('active');
+    });
+
+    // Password visibility toggle (untuk dua form)
+    function setupPasswordToggle(inputId) {
+      const passInput = document.getElementById(inputId);
+      const passToggle = passInput.parentNode.querySelector('.toggle-password');
+      passToggle.addEventListener('click', () => {
+        if (passInput.type === "password") {
+          passInput.type = "text";
+          passToggle.innerHTML = '<i class="fas fa-eye-slash"></i>';
+        } else {
+          passInput.type = "password";
+          passToggle.innerHTML = '<i class="fas fa-eye"></i>';
+        }
+      });
+    }
+    setupPasswordToggle('passwordInputSiswa');
+    setupPasswordToggle('passwordInputGuru');
+
+    // Online/offline status
+    const statusElem = document.getElementById('netStatus');
+    function updateStatus() {
+      if (navigator.onLine) {
+        statusElem.textContent = 'ONLINE';
+        statusElem.classList.add('online');
+        statusElem.classList.remove('offline');
+      } else {
+        statusElem.textContent = 'OFFLINE';
+        statusElem.classList.add('offline');
+        statusElem.classList.remove('online');
+      }
+    }
+    window.addEventListener('online',  updateStatus);
+    window.addEventListener('offline', updateStatus);
+    updateStatus();
+  </script>
+</body>
+</html>
